@@ -1,0 +1,41 @@
+{
+  "name": "liteloggerjs",
+  "version": "1.0.0",
+  "description": "This is logger for browser with window in page",
+  "type": "module",
+  "main": "dist/litelogger.js",
+  "module": "dist/index.js",
+  "types": "dist/@types/index.d.ts",
+  "unpkg": "dist/litelogger.js",
+  "exports": {
+    "types": "./dist/@types/index.d.ts",
+    "import": "./dist/index.js",
+    "require": "./dist/index.cjs",
+    "default": "./dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "sideEffects": false,
+  "scripts": {
+    "build:tsup": "tsup && shx mv dist/browser.global.js dist/litelogger.js",
+    "build:types": "tsc -p ./tsconfig.types.json",
+    "build": "pnpm run build:tsup && pnpm run build:types",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "logger",
+    "logger js",
+    "browser logger",
+    "lite logger"
+  ],
+  "author": "Pramod Jain",
+  "license": "MIT",
+  "packageManager": "pnpm@10.33.0",
+  "dependencies": {
+    "esbuild": "^0.28.0",
+    "shx": "^0.4.0",
+    "tsup": "^8.5.1",
+    "typescript": "^6.0.3"
+  }
+}
