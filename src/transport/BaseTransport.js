@@ -15,12 +15,13 @@
 
 
 ////----------------------------  TYPES(JSDocs) ONLY ---------------------------
-
+/** @typedef {import("../core/Logger.js").LogEntry} LogEntry */
 
 ////----------------------------------------------------------------------------
 /**
  * @description It is base class for Transport layer. This class is being referred by LoggerCore to call
  * log function.
+ * @abstract
  */
 export class BaseTransport {
   /** @type {string} */
@@ -34,14 +35,14 @@ export class BaseTransport {
   }
 
   /**
-   * @return {this} - Returns object in which context this method is called
+   * @returns {this} - Returns object in which context this method is called
    * @throws {Error} - if any issue occures
    */
   init() { throw new Error("Not implemented"); }
   /**
    * 
-   * @param {import("../core/Logger.js").LogEntry} logEntry 
-   * @return {void} - No return as after this function, there is no chaining 
+   * @param {LogEntry} logEntry 
+   * @returns {void} - No return as after this function, there is no chaining 
    * @throws {Error} - if any issue occures
    */
   log(logEntry) {
@@ -49,11 +50,19 @@ export class BaseTransport {
   }
 
   /**
-   * @return {void} - No return as after this function, there is no chaining 
+   * @returns {void} - No return as after this function, there is no chaining 
    * @throws {Error} - if any issue occures
    */
-  destory() {
+  destroy() {
     throw new Error("Not implemented");
+  }
+
+  /**
+   * Transport name.
+   * @returns {string}
+   */
+  get transportName() {
+    return this.#transportName;
   }
 
 }

@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html>
+
 <head lang="en">
     <meta charset="UTF-8">
     <title>Test Page</title>
     <!-- For logging in scripting -->
     <link href="jLogger.css" rel="stylesheet"><!--
- --><script rel="script" type="text/javascript" src="jLogger.js"></script>
+ -->
+    <script rel="script" type="text/javascript" src="./dist/litelogger.js"></script>
 </head>
+
 <body>
-<!-- Header -->
+    <!-- Header -->
     <div class="d-header">
         <div class="d-logo">
             <a href="#">Dak ImEx</a>
@@ -22,7 +25,20 @@
             </ul>
         </div>
     </div>
-<!-- Main content -->
-<!-- Footer -->
+    <!-- Main content -->
+    <!-- Footer -->
+    <script type="javascript">
+        const myLogger = new litelogger.LiteLogger()
+        myLogger.initialize();
+        for(let i = 11; i ; i--) {
+            if(0 === (i % 3))
+                myLogger.info("This is info log == " + i);
+            if(1 === (i % 3))
+                myLogger.debug("This is debug log == " + i);
+            if(2 === (i % 3))
+                myLogger.error("This is error log == " + i);
+        }
+ </script>
 </body>
+
 </html>

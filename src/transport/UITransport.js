@@ -14,16 +14,19 @@ import { BaseTransport } from "./BaseTransport.js";
 import { DateFormater } from "../formatter/DateFormater.js";
 import { LogLevelString } from "../core/Logger.js";
 
+
+/** @typedef {import("../core/Logger.js").LogEntry} LogEntry */
+
 /**
  * @description Class of UITrasnport as default logging on browser
  */
-
-
 export class UITransport extends BaseTransport {
   /** @type {HTMLDivElement|null} */
-  #containerElement;
+  #containerElement = null;
   /** @type {HTMLDivElement|null} */
-  #logBufferElement;
+  #logBufferContainer = null;
+  /** @type {HTMLDivElement|null} */
+  #lastEntry = null;
   /** @type {DateFormater} */
   #dateFormater;
 
@@ -33,8 +36,10 @@ export class UITransport extends BaseTransport {
   constructor() {
     super("UITransport");
 
-    this.#containerElement = null;
-    this.#logBufferElement = null;
+    if (typeof document === "undefined") {
+      throw new Error("UITransport requires a browser environment (document is undefined).");
+    }
+
     this.#dateFormater = new DateFormater();
   }
 
@@ -54,10 +59,10 @@ export class UITransport extends BaseTransport {
     const container = document.createElement("div");
     container.className = "log-container";
 
-    this.#logBufferElement = document.createElement("div");
-    this.#logBufferElement.className = "log-entry-list";
+    const logBufferEntry = document.createElement("div");
+    logBufferEntry.className = "log-entry-list";
 
-    container.appendChild(this.#logBufferElement);
+    container.appendChild(logBufferEntry);
     this.#containerElement.appendChild(tabElement);
     this.#containerElement.appendChild(titleElement);
     this.#containerElement.appendChild(container);
@@ -68,16 +73,25 @@ export class UITransport extends BaseTransport {
 
     document.body.appendChild(this.#containerElement);
 
+    this.#logBufferContainer = container;
+
     return this;
   }
 
   #scrollToBottom() {
-    if (this.#logBufferElement)
-      this.#logBufferElement.scrollTop = this.#logBufferElement.scrollHeight;
+    if (!this.#logBufferContainer)
+      return;
 
-    // this.#logBufferElement.style['margin-top'] = (buf.parentNode.clientHeight < buf.clientHeight) ?
-    //   (buf.parentNode.clientHeight - buf.clientHeight) + "px" :
-    //   "0";
+
+    // Use rAF so scroll happens after DOM paint (important when many logs)
+    requestAnimationFrame((() => {
+      if (!this.#lastEntry) {
+        console.log(`Log Buffer Element is present? : ${!!this.#lastEntry}`);
+        return;
+      }
+      this.#lastEntry?.scrollIntoView({ block: "end" })
+    }).bind(this));
+
     return this;
   }
 
@@ -88,8 +102,8 @@ export class UITransport extends BaseTransport {
    * @throws {Error} - throws Error if any issue happens
    */
   init() {
-    this.#createUI();
-    
+    if (!this.#containerElement || !this.#logBufferContainer) this.#createUI();
+
     return this;
   }
 
@@ -100,30 +114,48 @@ export class UITransport extends BaseTransport {
    * @throws {Error}
    */
   log(logEntry) {
+
+    if (!this.#containerElement || !this.#logBufferContainer) {
+      this.init();
+    }
+    if (!this.#logBufferContainer) throw new Error("UITransport buffer not initialized.");
+
+
+    const levelName = LogLevelString[logEntry.level] ?? String(logEntry.level);
+    const time = this.#dateFormater.getTime(logEntry.timestamp);
+
     const entryElement = document.createElement("div");
-    entryElement.className = `log-entry log-${LogLevelString[logEntry.level]}`;
+    entryElement.className = `log-entry log-${levelName.toLocaleLowerCase()}`;
 
     const timeElement = document.createElement("span");
     timeElement.className = "log-time";
-    timeElement.innerText = this.#dateFormater.getTime(logEntry.timestamp);
+    timeElement.innerText = time;
 
     const msgElement = document.createElement("span");
     msgElement.className = "log-text";
-    msgElement.innerText = logEntry.message;
+    msgElement.innerText = `${levelName} ${logEntry.message}`;
 
     entryElement.appendChild(timeElement);
     entryElement.appendChild(msgElement);
 
-    this.#logBufferElement?.appendChild(entryElement);
+    this.#lastEntry = entryElement;
+    this.#logBufferContainer.appendChild(entryElement);
 
     this.#scrollToBottom();
   }
 
   /**
-   * @return {void} - No return as after this function, there is no chaining 
+   * @returns {void} - No return as after this function, there is no chaining 
    * @throws {Error} - if any issue occures
    */
-  destory() {
-    // throw new Error("Not implemented");
+  destroy() {
+
+    if (this.#containerElement?.parentElement) {
+      this.#containerElement.parentElement.removeChild(this.#containerElement);
+    }
+
+    this.#containerElement = null;
+    this.#logBufferContainer = null;
+
   }
 }

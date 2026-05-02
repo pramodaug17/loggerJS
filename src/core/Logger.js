@@ -19,6 +19,7 @@
 ////----------------------------  TYPES(JSDocs) ONLY ---------------------------
 
 /**
+ * A single log record
  * @typedef {Object} LogEntry
  * @property {Date} timestamp
  * @property {LogLevel} level
@@ -31,7 +32,8 @@
 ////----------------------------------------------------------------------------
 
 /**
- * 
+ * Numeric log levels.
+ * Higher value = more verbose.
  * @readonly
  * @enum {number}
  */
@@ -44,13 +46,13 @@ export const LogLevel = Object.freeze({
 });
 
 /**
- * 
+ * Reverse lookup from numeric level -> string label.
  * @readonly
- * @enum {string}
+ * @type {Readonly<Record<number, string>>}
  */
 export const LogLevelString = Object.freeze(
   Object.fromEntries(
-    Object.entries(LogLevel).map(([k, v]) => [v, k.toLowerCase()])
+    Object.entries(LogLevel).map(([k, v]) => [v, k])
   )
 );
 

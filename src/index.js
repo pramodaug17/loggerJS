@@ -12,6 +12,10 @@
 
 import { LoggerCore } from "./core/LoggerCore.js";
 
-class LiteLogger extends LoggerCore {}
 
-export { LiteLogger };
+/**
+ * Public logger class (thin wrapper around LoggerCore).
+ */
+export class LiteLogger extends LoggerCore {}
+
+export default LiteLogger;
