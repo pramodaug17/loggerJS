@@ -4,6 +4,10 @@
   "description": "This is logger for browser with window in page",
   "license": "MIT",
   "author": "Pramod Jain",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/pramodaug17/loggerJS.git"
+  },
   "type": "module",
   "main": "dist/index.cjs",
   "module": "dist/index.js",
