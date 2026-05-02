@@ -18,22 +18,20 @@
 
 ////----------------------------------  IMPORTS --------------------------------
 import { LogLevel } from "./Logger.js";
-import { BaseTransport } from "../transport/BaseTransport.js";
-import { UITransport } from "../transport/UITransport.js";
 
 
 ////----------------------------  TYPES(JSDocs) ONLY ---------------------------
+
+/** @typedef {import("./Logger.js").LogEntry} LogEntry */
+/** @typedef {import("../transport/BaseTransport.js").BaseTransport} BaseTransportLike */
+
+
 /**
  * @typedef {Object} LoggerConfiguration
- * @property {boolean} [isEnabled] - this will tell if logger is enabled
- * @property {LogLevel} [logLevel] - it is minimum level of log to be display 
+ * @property {boolean} [isEnabled=true] - this will tell if logger is enabled
+ * @property {LogLevel} [logLevel=LogLevel.DEBUG] - it is minimum level of log to be display 
  */
 
-
-/**
- * @typedef {BaseTransport} BaseTransportLike
- * @description BaseTransport or any subclass of it
- */
 
 
 ////----------------------------------------------------------------------------
@@ -49,7 +47,7 @@ export class LoggerCore {
   #transportList;
   /** @type {boolean} */
   #isInitialized;
-  /** @type {import("./Logger.js").LogEntry[]} */
+  /** @type {LogEntry[]} */
   #logBufferBefore;
 
   /**
@@ -105,6 +103,7 @@ export class LoggerCore {
       try {
         transport.log(logEntry);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error(error);
       }
     });
@@ -127,20 +126,23 @@ export class LoggerCore {
    * 
    * @returns {this}
    */
-  initialize() {
-    if (this.#transportList.length === 0) {
-      this.addTransport(new UITransport());
-    }
-
+  initialize () {
     this.#transportList.forEach(transport => {
-      transport.init();
+      try {
+        transport.init?.();
+      } catch (e) {
+        // eslint-disable-next-line no-console
+        console.error(e);
+      }
     });
 
     this.#isInitialized = true;
 
-    this.#logBufferBefore.forEach(logEntry => {
-      this.#dispatch(logEntry);
-    });
+    if (this.#logBufferBefore.length) {
+      this.#logBufferBefore.forEach(logEntry => {
+        this.#dispatch(logEntry);
+      });
+    }
 
     this.#logBufferBefore = [];
 
@@ -157,7 +159,7 @@ export class LoggerCore {
    * @param {string} message - Log message
    */
   warn (message) { this.#log(LogLevel.WARN, message); }
-  
+
   /** 
    * @param {string} message - Log message
    */

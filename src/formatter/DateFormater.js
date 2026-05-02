@@ -12,8 +12,8 @@
 
 /**
  * @typedef {Object} DateFormaterOption
- * @property {string} [dateFormate]
- * @property {string} [timeFormate]
+ * @property {string} [dateFormate="FULL_DATE"]
+ * @property {string} [timeFormate="hh:mm:ss"]
  */
 
 
@@ -47,53 +47,50 @@ export class DateFormater {
 
   /** @param {DateFormaterOption} opts */
   constructor (opts = {}) {
-    this.#dateFormate = opts?.dateFormate || "FULL_DATE";
-    this.#timeFormate = opts?.timeFormate || "hh:mm:ss";
+    this.#dateFormate = opts.dateFormate ?? "FULL_DATE";
+    this.#timeFormate = opts.timeFormate ?? "hh:mm:ss";
   }
   /**
-   * getDate fn to provide the date in specific formate
-   * @param {Date} [dt] specific date if not passed then current date will be return
-   * @returns {string} date in '03 May, 2026' formate by default
+   * getDate fn to provide the date in specific formate. Date in '03 May, 2026' formate by default
+   * @param {Date} [dt=new Date()] specific date if not passed then current date will be return
+   * @returns {string}
    */
-  getDate(dt) {
-    dt = dt || new Date();
+  getDate(dt=new Date()) {
     let date = ("0" + dt.getDate()).slice(-2);
 
-    return (months[dt.getMonth()] + " " + date + ", " + dt.getFullYear());
+    return (`${months[dt.getMonth()]} ${date}, ${dt.getFullYear()}`);
   }
 
   /**
-   * getDate fn to provide the date in specific formate
-   * @param {Date} [dt] specific day if not passed then current date will be return
-   * @returns {string} date in 'Sunday' formate
+   * getDate fn to provide the date in specific formate. Day in 'Sunday' formate
+   * @param {Date} [dt=new Date()] specific day if not passed then current date will be return
+   * @returns {string}
    */
-  getDay(dt) {
-    dt = dt || new Date();
+  getDay(dt=new Date()) {
     return days[dt.getDay()]
   }
 
   /**
-   * getDate fn to provide the date in specific formate
-   * @param {Date} [dt] specific date if not passed then current date will be return
-   * @returns {string} date and time in '03 May 2026, 13:04:44' formate
+   * getDate fn to provide the date in specific formate. day and Date in ' Sunday, 03 May 2026' formate
+   * @param {Date} [dt=new Date()] specific date if not passed then current date will be return
+   * @returns {string}
    */
-  getDaynDate(dt) {
-    dt = dt || new Date();
-    return (days[dt.getDay()] + ", " + this.getDate(dt));
+  getDaynDate(dt=new Date()) {
+    return (`${this.getDay(dt)}, ${this.getDate(dt)}`);
   }
 
   /**
    * getDate fn to provide the date in specific formate
-   * @param {Date} [dt] specific date if not passed then current date will be return
+   * @param {Date} [dt=new Date()] specific date if not passed then current date will be return
    * @returns {string} time in '13:04:44' formate
    */
-  getTime(dt) {
+  getTime(dt=new Date()) {
     dt = dt || new Date();
-    let hr = ("0" + dt.getHours()).slice(-2);
-    let min = ("0" + dt.getMinutes()).slice(-2);
-    let sec = ("0" + dt.getSeconds()).slice(-2);
+    let hr = String(dt.getHours()).padStart(2, "0");
+    let min = String(dt.getMinutes()).padStart(2, "0");
+    let sec = String(dt.getSeconds()).padStart(2, "0");
 
-    return (hr + ":" + min + ":" + sec);
+    return (`${hr}:${min}:${sec}`);
   }
 
 }

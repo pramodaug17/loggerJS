@@ -19,13 +19,20 @@
  */
 "use strict";
 
-import { LoggerCore } from "./core/LoggerCore.js";
+export * from "./index.js"
 
-class LiteLogger extends LoggerCore {};
+import { LiteLogger } from "./index.js";
+import { UITransport } from "./transport/UITransport.js";
 
-globalThis.$logger = new LoggerCore();
+
+/**
+ * Factory: creates a browser logger with UI transport attached.
+ * @returns {LiteLogger}
+ */
+function createBrowserLogger() {
+  return new LiteLogger().addTransport(new UITransport());
+}
+
+
+globalThis.$logger = createBrowserLogger();
 globalThis.LiteLogger = LiteLogger;
-
-
-export { LiteLogger }
-// globalThis.events = globalThis.EventJs
