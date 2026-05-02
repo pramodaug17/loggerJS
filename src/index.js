@@ -3,7 +3,6 @@
  * 
  * @description This is entry file for logger utility
  * 
- * 
  * @module LiteLogger
  * @author Pramod Jain
  * @since 1.0.0
